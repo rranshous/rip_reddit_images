@@ -3,6 +3,7 @@
 require 'rss'
 require 'open-uri'
 require 'base64'
+require 'json'
 require 'pry'
 
 OUT_BASE = File.absolute_path('./data')
@@ -59,19 +60,30 @@ last = ''
         img_url ||= content[/https:\/\/i.imgur.com.*?.jpg/]
         img_url ||= content.match(/(http.*?jpg).*?(http.*?jpg)/)[2][/href.*/][/https.*/] rescue nil
         if img_url
-          out_path = Pathname.new(
-            File.join(OUT_BASE,
-                      file_name(post_html_url.to_s, img_url))
-          )
+          image_name = file_name(post_html_url.to_s, img_url)
+          out_path = Pathname.new(File.join(OUT_BASE, image_name))
+          meta_out_path = out_path.to_s + '.meta.json'
           if out_path.exist?
             log "skipping, exists: #{out_path}"
           else
-            log "downloading: #{img_url}"
+            log "downloading image: #{img_url}"
+            data_size = nil
             open_slow(img_url) do |img_data|
-              log "writing: #{out_path}"
+              log "writing image: #{out_path}"
               File.open(out_path, 'wb') do |fh|
-                fh.write img_data.read
+                data = img_data.read
+                data_size = data.size
+                fh.write data
               end
+            end
+            log "writing meta: #{meta_out_path}"
+            File.open(meta_out_path, 'w') do |fh|
+              fh.write(JSON.dump({
+                original_post_url: post_html_url,
+                image_url: img_url,
+                image_name: image_name,
+                image_data_size: data_size,
+              }))
             end
           end
         end
