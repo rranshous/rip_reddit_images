@@ -70,7 +70,7 @@ last = ''
             open_slow(img_url) do |img_data|
               log "writing: #{out_path}"
               File.open(out_path, 'wb') do |fh|
-                fh.write img_data
+                fh.write img_data.read
               end
             end
           end
