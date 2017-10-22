@@ -12,7 +12,10 @@ def log msg
 end
 
 def open_slow url, &blk
-  open(url) do |*args|
+  req_args = {
+    "User-agent" => "https://github.com/rranshous/rip_reddit_images"
+  }
+  open(url, req_args) do |*args|
     blk.call(*args)
   end
 rescue OpenURI::HTTPError => ex
