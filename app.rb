@@ -18,6 +18,10 @@ def open_slow url, &blk
   open(url, req_args) do |*args|
     blk.call(*args)
   end
+
+rescue URI::InvalidURIError => ex
+  log "invalid url: #{ex}"
+
 rescue OpenURI::HTTPError => ex
   log "ex: #{ex}"
   if ex.message[/429 Too Many Requests/]
