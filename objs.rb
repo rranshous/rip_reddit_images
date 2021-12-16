@@ -2,6 +2,7 @@ require 'open-uri'
 require 'base64'
 require 'rss'
 require 'json'
+require 'uri'
 
 def log msg
   STDERR.write("#{msg}\n")
@@ -13,7 +14,7 @@ module HttpOpener
       "User-agent" => "https://github.com/rranshous/rip_reddit_images"
     }
     log "opening: #{url}"
-    open(url, req_args) do |*args|
+    URI.open(url, req_args) do |*args|
       blk.call(*args)
     end
 
@@ -246,6 +247,6 @@ class FeedScanner
   end
 
   def each_page
-    1000.times { yield }
+    100.times { yield }
   end
 end

@@ -3,8 +3,10 @@
 require 'pry'
 require_relative 'objs'
 
-OUT_BASE = File.absolute_path('./data')
-SUBREDDIT_NAME = 'PropagandaPosters'
+SUBREDDIT_NAME = ARGV.shift
+puts "ripping subreddit #{SUBREDDIT_NAME}"
+OUT_BASE = ENV['OUTPUT_DIR'] || File.absolute_path('./data')
+puts "outputting to #{OUT_BASE}"
 
 feed_scanner    = FeedScanner.new(subreddit_name: SUBREDDIT_NAME)
 post_scanner    = PostScanner.new(feed_scanner: feed_scanner)
