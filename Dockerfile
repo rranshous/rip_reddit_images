@@ -8,7 +8,7 @@ RUN bundle
 
 COPY ./* /app/
 
-ENV OUTPUT_DIR '/data/'
+ENV DATA_DIR '/data/'
 
 ENTRYPOINT ["bash"]
 CMD ["download_many.sh"]

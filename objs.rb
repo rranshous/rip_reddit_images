@@ -233,16 +233,18 @@ class FeedScanner
   end
 
   def page_url
+    puts "last id: #{last_id}"
     "https://www.reddit.com/r/#{subreddit_name}/.rss?count=25&after=#{last_id}"
   end
 
   def feed_url
-    "#{page_url}.rss"
+    "#{page_url}"
   end
 
   private
 
   def get_page_feed
+    puts "opening feed page: #{feed_url}"
     open_slow(feed_url) { |data| RSS::Parser.parse data }
   end
 
