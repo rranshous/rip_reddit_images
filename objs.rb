@@ -58,7 +58,11 @@ class Post
     return @parsed_feed if @parsed_feed
     @parsed_feed = open_slow(url + '.rss') do |data|
       if data
-        RSS::Parser.parse(data)
+        begin
+          RSS::Parser.parse(data)
+        rescue
+          nil
+        end
       else
         nil
       end
@@ -74,14 +78,16 @@ class ImageWriter
   end
 
   def write image
-    data = image.data
     save_path = save_path_for image
+    if save_path.exist?
+      log "[already-downloaded] skipping data: #{image}"
+      return false
+    end
+    data = image.data
     if data.nil?
       log "[nildata] skipping data: #{image}"
     elsif data.length == 0
       log "[nodata] skipping data: #{image}"
-    elsif save_path.exist?
-      log "[already-downloaded] skipping data: #{image}"
     else
       log "writing data: #{image}"
       write_data image, data
@@ -225,7 +231,8 @@ class FeedScanner
   end
 
   def each
-    each_page do
+    each_page do |i|
+      puts "page: #{i}"
       feed = get_page_feed
       yield feed
       self.last_id = feed.items.last.id.content
@@ -233,7 +240,6 @@ class FeedScanner
   end
 
   def page_url
-    puts "last id: #{last_id}"
     "https://www.reddit.com/r/#{subreddit_name}/.rss?count=25&after=#{last_id}"
   end
 
@@ -249,6 +255,6 @@ class FeedScanner
   end
 
   def each_page
-    100.times { yield }
+    1000.times { |i| yield i }
   end
 end
