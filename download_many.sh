@@ -2,7 +2,7 @@
 
 set -x
 
-for subreddit in `cat subreddits`
+for subreddit in `cat subreddits | sort -R`
 do
  export OUTPUT_DIR=$DATA_DIR/$subreddit
  echo "download images from $subreddit"

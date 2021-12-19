@@ -200,8 +200,12 @@ class ImageScanner
 
   def each
     post_scanner.each do |post|
-      image = Image.from_post post
-      yield image if !image.nil?
+      begin
+        image = Image.from_post post
+        yield image if !image.nil?
+      rescue => ex
+        puts "Error getting image from post: #{ex}"
+      end
     end
   end
 end
@@ -255,6 +259,6 @@ class FeedScanner
   end
 
   def each_page
-    1000.times { |i| yield i }
+    (ENV['MAX_PAGES'] || 10).to_i.times { |i| yield i }
   end
 end
